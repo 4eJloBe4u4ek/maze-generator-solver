@@ -1,0 +1,66 @@
+package maze.io;
+
+import maze.model.Cell;
+import maze.model.Coordinate;
+import maze.model.Maze;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class MazeTextRenderer implements Renderer {
+    private final static String PASSAGE_SYMBOL = "⬛️";
+    private final static String WALL_SYMBOL = "⬜️";
+    private final static String ROAD_SYMBOL = "🛣️";
+    private final static String DESERT_SYMBOL = "🏜️";
+    private final static String PATH_SYMBOL = "🟩";
+    private final static String END_SYMBOL = "🏁";
+    private final static String START_SYMBOL = "🏁";
+
+    @Override
+    public String render(Maze maze) {
+        return renderMaze(maze, new HashSet<>());
+    }
+
+    @Override
+    public String render(Maze maze, List<Coordinate> path) {
+        return renderMaze(maze, new HashSet<>(path));
+    }
+
+    private String renderMaze(Maze maze, Set<Coordinate> path) {
+        StringBuilder result = new StringBuilder();
+        int height = maze.grid().length;
+        int width = maze.grid()[0].length;
+        result.append(WALL_SYMBOL.repeat(width + 2)).append('\n');
+
+        for (int row = 0; row < height; row++) {
+            result.append(WALL_SYMBOL);
+            for (int col = 0; col < width; col++) {
+                Coordinate current = new Coordinate(row, col);
+                if (current.equals(maze.start())) {
+                    result.append(START_SYMBOL);
+                } else if (current.equals(maze.end())) {
+                    result.append(END_SYMBOL);
+                } else if (path.contains(current)) {
+                    result.append(PATH_SYMBOL);
+                } else {
+                    result.append(getCellSymbol(maze.grid()[row][col]));
+                }
+            }
+            result.append(WALL_SYMBOL).append('\n');
+        }
+
+        result.append(WALL_SYMBOL.repeat(width + 2));
+
+        return result.toString();
+    }
+
+    private String getCellSymbol(Cell cell) {
+        return switch (cell.type()) {
+            case PASSAGE -> PASSAGE_SYMBOL;
+            case WALL -> WALL_SYMBOL;
+            case ROAD -> ROAD_SYMBOL;
+            case DESERT -> DESERT_SYMBOL;
+        };
+    }
+}
