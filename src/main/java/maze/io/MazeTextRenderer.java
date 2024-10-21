@@ -7,6 +7,9 @@ import maze.model.Cell;
 import maze.model.Coordinate;
 import maze.model.Maze;
 
+/**
+ * Класс {@code MazeTextRenderer} отвечает за текстовую визуализацию лабиринта.
+ */
 public class MazeTextRenderer implements Renderer {
     private final static String PASSAGE_SYMBOL = "⬛️";
     private final static String WALL_SYMBOL = "⬜️";
@@ -16,11 +19,24 @@ public class MazeTextRenderer implements Renderer {
     private final static String END_SYMBOL = "🏁";
     private final static String START_SYMBOL = "🏁";
 
+    /**
+     * Отображает лабиринт без дополнительного пути.
+     *
+     * @param maze лабиринт для отображения
+     * @return строка, представляющая визуализацию лабиринта
+     */
     @Override
     public String render(Maze maze) {
         return renderMaze(maze, new HashSet<>());
     }
 
+    /**
+     * Отображает лабиринт с указанным путем.
+     *
+     * @param maze лабиринт для отображения
+     * @param path список координат, представляющий путь в лабиринте
+     * @return строка, представляющая визуализацию лабиринта с путем
+     */
     @Override
     public String render(Maze maze, List<Coordinate> path) {
         return renderMaze(maze, new HashSet<>(path));

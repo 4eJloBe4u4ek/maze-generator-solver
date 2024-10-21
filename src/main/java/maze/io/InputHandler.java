@@ -19,14 +19,18 @@ import maze.solver.DijkstraSolver;
 import maze.solver.MazeSolverAlgorithm;
 import maze.solver.Solver;
 
+/**
+ * Класс {@code InputHandler} отвечает за взаимодействие с пользователем
+ * для получения параметров, необходимых для генерации лабиринта и нахождения пути.
+ */
 public class InputHandler {
     private static final String SEPARATOR = " - ";
     private static final String NUMERIC_REGEX = "\\d+";
     private static final int MINIMUM_SIZE = 3;
     private static final String NULL_EXCEPTION = "Значение не может быть null";
 
-    private PrintStream out;
-    private BufferedReader in;
+    private final PrintStream out;
+    private final BufferedReader in;
 
     @Getter private int height;
     @Getter private int width;
@@ -36,11 +40,22 @@ public class InputHandler {
     @Getter private MazeGenerator generatorType;
     @Getter private MazeSolverAlgorithm solverType;
 
+    /**
+     * Конструктор класса {@code InputHandler}.
+     *
+     * @param out объект {@code PrintStream} для вывода информации пользователю
+     * @param in объект {@code InputStream} для чтения ввода от пользователя
+     */
     public InputHandler(PrintStream out, InputStream in) {
         this.out = out;
         this.in = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
     }
 
+    /**
+     * Запускает процесс получения параметров от пользователя и генерации лабиринта.
+     *
+     * @throws IOException если произошла ошибка ввода-вывода
+     */
     public void run() throws IOException {
         boolean continueGenerating = true;
         MazeTextRenderer renderer = new MazeTextRenderer();
@@ -66,6 +81,12 @@ public class InputHandler {
 
     }
 
+    /**
+     * Запрашивает у пользователя, хочет ли он сгенерировать новый лабиринт.
+     *
+     * @return true, если пользователь хочет продолжить; false в противном случае
+     * @throws IOException если произошла ошибка ввода-вывода
+     */
     private boolean shouldContinue() throws IOException {
         out.println("Хотите сгенерировать новый лабиринт? (да/нет):");
         String input = in.readLine();
@@ -96,6 +117,11 @@ public class InputHandler {
         return "Введите " + dimension + " лабиринта (минимум " + MINIMUM_SIZE + "):";
     }
 
+    /**
+     * Получает параметры лабиринта от пользователя.
+     *
+     * @throws IOException если произошла ошибка ввода-вывода
+     */
     public void getMazeParametersFromUser() throws IOException {
         height = getPositiveInteger(getSizeMessage("высоту"));
         width = getPositiveInteger(getSizeMessage("ширину"));
@@ -105,6 +131,15 @@ public class InputHandler {
         solverType = selectGeneratorAndSolver("Выберите алгоритм нахождения пути:", MazeSolverAlgorithm.values());
     }
 
+    /**
+     * Позволяет пользователю выбрать алгоритм генерации или решения лабиринта.
+     *
+     * @param message сообщение для пользователя с выбором
+     * @param enums массив перечислений, из которых нужно сделать выбор
+     * @param <T> тип перечисления
+     * @return выбранный алгоритм
+     * @throws IOException если произошла ошибка ввода-вывода
+     */
     private <T extends Enum<T>> T selectGeneratorAndSolver(String message, T[] enums) throws IOException {
         out.println(message);
         for (int i = 0; i < MazeGenerator.values().length; i++) {
@@ -141,6 +176,13 @@ public class InputHandler {
         };
     }
 
+    /**
+     * Получает положительное целое число от пользователя (для размеров).
+     *
+     * @param message сообщение для пользователя
+     * @return введенное положительное целое число
+     * @throws IOException если произошла ошибка ввода-вывода
+     */
     private int getPositiveInteger(String message) throws IOException {
         out.println(message);
 
@@ -164,6 +206,13 @@ public class InputHandler {
         }
     }
 
+    /**
+     * Получает корректные координаты от пользователя.
+     *
+     * @param message сообщение для пользователя
+     * @return введенные координаты
+     * @throws IOException если произошла ошибка ввода-вывода
+     */
     private Coordinate getValidCoordinate(String message) throws IOException {
         out.println(message);
 

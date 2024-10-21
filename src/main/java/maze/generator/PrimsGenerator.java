@@ -7,12 +7,28 @@ import maze.model.Coordinate;
 import maze.model.Direction;
 import maze.model.Maze;
 
+/**
+ * Класс {@code PrimsGenerator} реализует алгоритм Прима для генерации лабиринта.
+ */
 public class PrimsGenerator extends BaseGenerator {
 
+    /**
+     * Создает экземпляр генератора Прима с заданными координатами старта и конца.
+     *
+     * @param start координаты начальной точки лабиринта.
+     * @param end   координаты конечной точки лабиринта.
+     */
     public PrimsGenerator(Coordinate start, Coordinate end) {
         super(start, end);
     }
 
+    /**
+     * Генерирует лабиринт заданных размеров.
+     *
+     * @param height высота лабиринта.
+     * @param width  ширина лабиринта.
+     * @return сгенерированный лабиринт.
+     */
     @Override
     public Maze generate(int height, int width) {
         this.height = height;
@@ -44,6 +60,13 @@ public class PrimsGenerator extends BaseGenerator {
         return new Maze(height, width, grid, start, end);
     }
 
+    /**
+     * Обновляет список граничных ячеек на основе заданной координаты: если ее нет в списке
+     * и она соединена с одним проходом или конечной точкой.
+     *
+     * @param coordinate координаты для обновления границ.
+     * @param boundaryCoordinates список границ для добавления новых координат.
+     */
     private void updateBoundaryCoordinates(Coordinate coordinate, List<Coordinate> boundaryCoordinates) {
         for (Direction direction : Direction.values()) {
             int row = coordinate.row() + direction.rowOffset();
@@ -60,6 +83,12 @@ public class PrimsGenerator extends BaseGenerator {
         }
     }
 
+    /**
+     * Проверяет, соединяет ли указанная координата только один проход или является соседней с конечной точкой.
+     *
+     * @param coordinate координаты для проверки.
+     * @return true, если координата соединяет один проход или является соседом конечной точки; иначе false.
+     */
     private boolean connectsSingleOrEndPassage(Coordinate coordinate) {
         int passageCount = 0;
         boolean isEndNeighbor = false;

@@ -14,6 +14,13 @@ import maze.model.Coordinate;
 import maze.model.Direction;
 import maze.model.Maze;
 
+/**
+ * Абстрактный класс {@code BaseSolver} предоставляет базовую реализацию для решения лабиринтов.
+ * Этот класс использует алгоритм поиска с приоритетом для нахождения кратчайшего пути от
+ * заданной начальной точки до конечной в лабиринте.
+ * Подклассы должны реализовать метод {@link #calculatePriority(Node)},
+ * который рассчитывает приоритет для узлов в очереди.
+ */
 public abstract class BaseSolver implements Solver {
     protected static final int PASSAGE_COST = 5;
     protected static final int ROAD_COST = 3;
@@ -21,6 +28,15 @@ public abstract class BaseSolver implements Solver {
 
     protected Coordinate end;
 
+    /**
+     * Решает лабиринт, находя кратчайший путь от начальной до конечной точки.
+     *
+     * @param maze лабиринт, в котором необходимо найти путь.
+     * @param start начальная точка.
+     * @param end конечная точка.
+     * @return список координат, представляющих путь от начальной до конечной точки,
+     * или пустой список, если путь не найден.
+     */
     @Override
     public List<Coordinate> solve(Maze maze, Coordinate start, Coordinate end) {
         this.end = end;
@@ -57,8 +73,22 @@ public abstract class BaseSolver implements Solver {
         return Collections.emptyList();
     }
 
+    /**
+     * Рассчитывает приоритет узла для очереди.
+     * Подклассы должны реализовать этот метод, чтобы определить,
+     * как будет оцениваться приоритет для каждого узла.
+     *
+     * @param node узел, для которого нужно рассчитать приоритет.
+     * @return приоритет узла.
+     */
     protected abstract int calculatePriority(Node node);
 
+    /**
+     * Получает стоимость для указанного типа ячейки.
+     *
+     * @param cellType тип ячейки (проход, дорога, пустыня).
+     * @return стоимость ячейки.
+     */
     protected int getCostForCellType(Cell.Type cellType) {
         return switch (cellType) {
             case PASSAGE -> PASSAGE_COST;
@@ -68,6 +98,12 @@ public abstract class BaseSolver implements Solver {
         };
     }
 
+    /**
+     * Реконструирует путь от конечного узла до начального, используя ссылки на родительские узлы.
+     *
+     * @param node конечный узел.
+     * @return список координат, представляющих путь от начальной до конечной точки.
+     */
     protected List<Coordinate> reconstructPath(Node node) {
         List<Coordinate> path = new ArrayList<>();
         Node currentNode = node;
@@ -80,6 +116,13 @@ public abstract class BaseSolver implements Solver {
         return path;
     }
 
+    /**
+     * Получает соседние координаты (не стенки) для заданной координаты в лабиринте.
+     *
+     * @param current текущая координата.
+     * @param maze лабиринт, в котором находятся координаты.
+     * @return список соседних координат.
+     */
     protected List<Coordinate> getNeighbors(Coordinate current, Maze maze) {
         List<Coordinate> neighbors = new ArrayList<>();
 
@@ -96,6 +139,9 @@ public abstract class BaseSolver implements Solver {
         return neighbors;
     }
 
+    /**
+     * Вложенный класс, представляющий узел в поисковом алгоритме.
+     */
     protected static class Node {
         Coordinate coordinate;
         Node parent;

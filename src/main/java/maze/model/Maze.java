@@ -2,6 +2,9 @@ package maze.model;
 
 import lombok.Getter;
 
+/**
+ * Представляет лабиринт с заданной высотой, шириной и сеткой ячеек.
+ */
 @Getter
 public final class Maze {
     private final int height;

@@ -9,12 +9,28 @@ import maze.model.Coordinate;
 import maze.model.Direction;
 import maze.model.Maze;
 
+/**
+ * Класс {@code RecursiveBacktrackingGenerator} реализует алгоритм рекурсивного возврата для генерации лабиринта.
+ * Он использует стек (Deque) для отслеживания посещенных координат и выбирает случайного соседа для создания прохода.
+ */
 public class RecursiveBacktrackingGenerator extends BaseGenerator {
-
+    /**
+     * Создает экземпляр генератора рекурсивного возврата с заданными координатами старта и конца.
+     *
+     * @param start координаты начальной точки лабиринта.
+     * @param end   координаты конечной точки лабиринта.
+     */
     public RecursiveBacktrackingGenerator(Coordinate start, Coordinate end) {
         super(start, end);
     }
 
+    /**
+     * Генерирует лабиринт заданных размеров.
+     *
+     * @param height высота лабиринта.
+     * @param width  ширина лабиринта.
+     * @return сгенерированный лабиринт.
+     */
     @Override
     public Maze generate(int height, int width) {
         this.height = height;
@@ -46,6 +62,13 @@ public class RecursiveBacktrackingGenerator extends BaseGenerator {
         return new Maze(height, width, grid, start, end);
     }
 
+    /**
+     * Получает список подходящих соседних координат для заданной координаты: действительная координата
+     * с единственным соседним проходом.
+     *
+     * @param coordinate координаты для получения соседей.
+     * @return список подходящих соседей.
+     */
     private List<Coordinate> getEligibleNeighbors(Coordinate coordinate) {
         List<Coordinate> neighbors = new ArrayList<>();
 
@@ -60,6 +83,13 @@ public class RecursiveBacktrackingGenerator extends BaseGenerator {
         return neighbors;
     }
 
+    /**
+     * Проверяет, имеет ли указанная ячейка только одного соседнего прохода.
+     *
+     * @param row координата строки ячейки.
+     * @param col координата столбца ячейки.
+     * @return true, если ячейка имеет только одного соседнего прохода; иначе false.
+     */
     private boolean hasSingleNeighborPassage(int row, int col) {
         int passageCount = 0;
 

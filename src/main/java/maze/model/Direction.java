@@ -2,6 +2,9 @@ package maze.model;
 
 import lombok.Getter;
 
+/**
+ * {@code Direction} представляет возможные направления для перемещения в лабиринте.
+ */
 @Getter public enum Direction {
     UP(-1, 0),
     DOWN(1, 0),
