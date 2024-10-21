@@ -1,11 +1,12 @@
 package maze.generator;
 
-import java.security.SecureRandom;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 import maze.model.Cell;
 import maze.model.Coordinate;
+import maze.model.Direction;
 import maze.model.Maze;
 
 public class RecursiveBacktrackingGenerator extends BaseGenerator {
@@ -21,21 +22,21 @@ public class RecursiveBacktrackingGenerator extends BaseGenerator {
         this.grid = new Cell[this.height][this.width];
         initializeGrid();
 
-        Stack<Coordinate> stack = new Stack<>();
-        stack.push(start);
+        Deque<Coordinate> visitedCoordinates = new ArrayDeque<>();
+        visitedCoordinates.push(start);
         grid[start.row()][start.col()] = new Cell(start.row(), start.col(), Cell.Type.PASSAGE);
 
-        while (!stack.isEmpty()) {
-            Coordinate current = stack.peek();
+        while (!visitedCoordinates.isEmpty()) {
+            Coordinate current = visitedCoordinates.peek();
             List<Coordinate> neighbors = getEligibleNeighbors(current);
 
             if (!neighbors.isEmpty()) {
                 Coordinate next = neighbors.get(secureRandom.nextInt(neighbors.size()));
                 grid[next.row()][next.col()] = new Cell(next.row(), next.col(), determineNonWallSurfaceType());
 
-                stack.push(next);
+                visitedCoordinates.push(next);
             } else {
-                stack.pop();
+                visitedCoordinates.pop();
             }
         }
 
@@ -47,11 +48,10 @@ public class RecursiveBacktrackingGenerator extends BaseGenerator {
 
     private List<Coordinate> getEligibleNeighbors(Coordinate coordinate) {
         List<Coordinate> neighbors = new ArrayList<>();
-        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-        for (int[] direction : directions) {
-            int row = coordinate.row() + direction[0];
-            int col = coordinate.col() + direction[1];
+        for (Direction direction : Direction.values()) {
+            int row = coordinate.row() + direction.rowOffset();
+            int col = coordinate.col() + direction.colOffset();
 
             if (isValidCell(row, col, Cell.Type.WALL) && hasSingleNeighborPassage(row, col)) {
                 neighbors.add(new Coordinate(row, col));
@@ -62,15 +62,14 @@ public class RecursiveBacktrackingGenerator extends BaseGenerator {
 
     private boolean hasSingleNeighborPassage(int row, int col) {
         int passageCount = 0;
-        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-        for (int[] direction : directions) {
-            int adjRow = row + direction[0];
-            int adjCol = col + direction[1];
+        for (Direction direction : Direction.values()) {
+            int adjRow = row + direction.rowOffset();
+            int adjCol = col + direction.colOffset();
 
-            if (isValidCell(adjRow, adjCol, Cell.Type.PASSAGE) ||
-                isValidCell(adjRow, adjCol, Cell.Type.ROAD) ||
-                isValidCell(adjRow, adjCol, Cell.Type.DESERT)) {
+            if (isValidCell(adjRow, adjCol, Cell.Type.PASSAGE)
+                || isValidCell(adjRow, adjCol, Cell.Type.ROAD)
+                || isValidCell(adjRow, adjCol, Cell.Type.DESERT)) {
                 passageCount++;
             }
         }

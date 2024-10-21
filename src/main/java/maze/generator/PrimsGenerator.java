@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import maze.model.Cell;
 import maze.model.Coordinate;
+import maze.model.Direction;
 import maze.model.Maze;
 
 public class PrimsGenerator extends BaseGenerator {
@@ -44,11 +45,9 @@ public class PrimsGenerator extends BaseGenerator {
     }
 
     private void updateBoundaryCoordinates(Coordinate coordinate, List<Coordinate> boundaryCoordinates) {
-        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-
-        for (int[] direction : directions) {
-            int row = coordinate.row() + direction[0];
-            int col = coordinate.col() + direction[1];
+        for (Direction direction : Direction.values()) {
+            int row = coordinate.row() + direction.rowOffset();
+            int col = coordinate.col() + direction.colOffset();
 
             if (isValidCell(row, col, Cell.Type.WALL)) {
                 Coordinate newBoundary = new Coordinate(row, col);
@@ -63,20 +62,20 @@ public class PrimsGenerator extends BaseGenerator {
 
     private boolean connectsSingleOrEndPassage(Coordinate coordinate) {
         int passageCount = 0;
-        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
         boolean isEndNeighbor = false;
 
-        for (int[] direction : directions) {
-            int row = coordinate.row() + direction[0];
-            int col = coordinate.col() + direction[1];
+        for (Direction direction : Direction.values()) {
+            int row = coordinate.row() + direction.rowOffset();
+            int col = coordinate.col() + direction.colOffset();
 
             if (row == end.row() && col == end.col()) {
                 isEndNeighbor = true;
                 continue;
             }
 
-            if (isValidCell(row, col, Cell.Type.PASSAGE) || isValidCell(row, col, Cell.Type.DESERT) ||
-                isValidCell(row, col, Cell.Type.ROAD)) {
+            if (isValidCell(row, col, Cell.Type.PASSAGE)
+                || isValidCell(row, col, Cell.Type.DESERT)
+                || isValidCell(row, col, Cell.Type.ROAD)) {
                 passageCount++;
             }
         }

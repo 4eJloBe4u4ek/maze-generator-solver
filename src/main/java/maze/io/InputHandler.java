@@ -20,7 +20,10 @@ import maze.solver.MazeSolverAlgorithm;
 import maze.solver.Solver;
 
 public class InputHandler {
-    private final String SEPARATOR = " - ";
+    private static final String SEPARATOR = " - ";
+    private static final String NUMERIC_REGEX = "\\d+";
+    private static final int MINIMUM_SIZE = 3;
+    private static final String NULL_EXCEPTION = "Значение не может быть null";
 
     private PrintStream out;
     private BufferedReader in;
@@ -40,6 +43,7 @@ public class InputHandler {
 
     public void run() throws IOException {
         boolean continueGenerating = true;
+        MazeTextRenderer renderer = new MazeTextRenderer();
 
         while (continueGenerating) {
             getMazeParametersFromUser();
@@ -50,7 +54,6 @@ public class InputHandler {
             Maze maze = generator.generate(height, width);
             List<Coordinate> path = solver.solve(maze, start, end);
 
-            MazeTextRenderer renderer = new MazeTextRenderer();
             out.println(renderer.render(maze) + '\n');
             if (path.isEmpty()) {
                 out.println("Путь между точками не найден");
@@ -65,7 +68,12 @@ public class InputHandler {
 
     private boolean shouldContinue() throws IOException {
         out.println("Хотите сгенерировать новый лабиринт? (да/нет):");
-        String input = in.readLine().trim().toLowerCase();
+        String input = in.readLine();
+        if (input == null) {
+            throw new IllegalArgumentException(NULL_EXCEPTION);
+        }
+        input = input.trim().toLowerCase();
+
         while (true) {
             switch (input) {
                 case "нет":
@@ -75,14 +83,22 @@ public class InputHandler {
                     return true;
                 default:
                     out.println("Введите 'да' или 'нет'");
-                    input = in.readLine().trim().toLowerCase();
+                    input = in.readLine();
+                    if (input == null) {
+                        throw new IllegalArgumentException(NULL_EXCEPTION);
+                    }
+                    input = input.trim().toLowerCase();
             }
         }
     }
 
+    private String getSizeMessage(String dimension) {
+        return "Введите " + dimension + " лабиринта (минимум " + MINIMUM_SIZE + "):";
+    }
+
     public void getMazeParametersFromUser() throws IOException {
-        height = getPositiveInteger("Введите высоту лабиринта (минимум 3):");
-        width = getPositiveInteger("Введите ширину лабиринта (минимум 3):");
+        height = getPositiveInteger(getSizeMessage("высоту"));
+        width = getPositiveInteger(getSizeMessage("ширину"));
         start = getValidCoordinate("Введите координаты старта, нумерация с 0 ('строка столбец'):");
         end = getValidCoordinate("Введите координаты финиша, нумерация с 0 ('строка столбец'):");
         generatorType = selectGeneratorAndSolver("Выберите алгоритм генерации лабиринта:", MazeGenerator.values());
@@ -96,7 +112,12 @@ public class InputHandler {
         }
 
         while (true) {
-            String input = in.readLine().toLowerCase().trim();
+            String input = in.readLine();
+            if (input == null) {
+                throw new IllegalArgumentException(NULL_EXCEPTION);
+            }
+            input = input.toLowerCase().trim();
+
             for (int i = 0; i < enums.length; i++) {
                 if (input.equals(String.valueOf(i + 1)) || input.equals(enums[i].name().toLowerCase())) {
                     return enums[i];
@@ -127,17 +148,18 @@ public class InputHandler {
             String input = in.readLine();
 
             if (input == null) {
-                throw new IllegalArgumentException("Значение не может быть null");
+                throw new IllegalArgumentException(NULL_EXCEPTION);
             }
             input = input.trim();
 
-            if (input.matches("\\d+")) {
-                if (Integer.parseInt(input) >= 3) {
+            if (input.matches(NUMERIC_REGEX)) {
+                if (Integer.parseInt(input) >= MINIMUM_SIZE) {
                     return Integer.parseInt(input);
                 }
-                out.println("Значение должно быть больше 2, попробуйте снова:");
+                out.println("Значение должно быть больше " + (MINIMUM_SIZE - 1) + ", попробуйте снова:");
             } else {
-                out.println("Некорректное значение. Введите положительное целое число больше 2:");
+                out.println(
+                    "Некорректное значение. Введите положительное целое число больше " + (MINIMUM_SIZE - 1) + ":");
             }
         }
     }
@@ -147,18 +169,22 @@ public class InputHandler {
 
         while (true) {
             String input = in.readLine();
+            if (input == null) {
+                throw new IllegalArgumentException(NULL_EXCEPTION);
+            }
+
             String[] parts = input.split(" ");
             if (parts.length != 2) {
                 out.println("Введите координаты в формате 'строка столбец' (0 <= и < размера)");
                 continue;
             }
 
-            if (parts[0].matches("\\d+") && parts[1].matches("\\d+")) {
+            if (parts[0].matches(NUMERIC_REGEX) && parts[1].matches(NUMERIC_REGEX)) {
                 int row = Integer.parseInt(parts[0]);
                 int col = Integer.parseInt(parts[1]);
 
-                if ((row == 0 && col < width) || (row == height - 1 && col < width) ||
-                    (row < height && col == 0) || (row < height && col == width - 1)) {
+                if ((row == 0 && col < width) || (row == height - 1 && col < width)
+                    || (row < height && col == 0) || (row < height && col == width - 1)) {
                     return new Coordinate(row, col);
                 } else {
                     out.println("Координата должна находится на границах лабиринта, попробуйте еще раз:");

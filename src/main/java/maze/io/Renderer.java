@@ -1,9 +1,8 @@
 package maze.io;
 
+import java.util.List;
 import maze.model.Coordinate;
 import maze.model.Maze;
-
-import java.util.List;
 
 public interface Renderer {
     String render(Maze maze);

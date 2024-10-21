@@ -1,12 +1,11 @@
 package maze.io;
 
-import maze.model.Cell;
-import maze.model.Coordinate;
-import maze.model.Maze;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import maze.model.Cell;
+import maze.model.Coordinate;
+import maze.model.Maze;
 
 public class MazeTextRenderer implements Renderer {
     private final static String PASSAGE_SYMBOL = "⬛️";
