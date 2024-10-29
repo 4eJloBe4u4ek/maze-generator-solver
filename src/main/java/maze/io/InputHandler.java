@@ -8,7 +8,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.Getter;
-import maze.generator.Generator;
+import maze.generator.MazeGenerationAlgorithm;
 import maze.generator.MazeGenerator;
 import maze.generator.PrimsGenerator;
 import maze.generator.RecursiveBacktrackingGenerator;
@@ -24,6 +24,7 @@ import maze.solver.Solver;
  * для получения параметров, необходимых для генерации лабиринта и нахождения пути.
  */
 public class InputHandler {
+    private static final String HELP_COMMAND = "?";
     private static final String SEPARATOR = " - ";
     private static final String NUMERIC_REGEX = "\\d+";
     private static final int MINIMUM_SIZE = 3;
@@ -44,7 +45,7 @@ public class InputHandler {
      * Конструктор класса {@code InputHandler}.
      *
      * @param out объект {@code PrintStream} для вывода информации пользователю
-     * @param in объект {@code InputStream} для чтения ввода от пользователя
+     * @param in  объект {@code InputStream} для чтения ввода от пользователя
      */
     public InputHandler(PrintStream out, InputStream in) {
         this.out = out;
@@ -61,12 +62,13 @@ public class InputHandler {
         MazeTextRenderer renderer = new MazeTextRenderer();
 
         while (continueGenerating) {
+            help();
             getMazeParametersFromUser();
 
-            Generator generator = getGenerator();
+            MazeGenerationAlgorithm generator = getGenerator();
             Solver solver = getSolver();
 
-            Maze maze = generator.generate(height, width);
+            Maze maze = generator.generate();
             List<Coordinate> path = solver.solve(maze, start, end);
 
             out.println(renderer.render(maze) + '\n');
@@ -103,7 +105,7 @@ public class InputHandler {
                 case "да":
                     return true;
                 default:
-                    out.println("Введите 'да' или 'нет'");
+                    out.println("Введите 'да' или 'нет':");
                     input = in.readLine();
                     if (input == null) {
                         throw new IllegalArgumentException(NULL_EXCEPTION);
@@ -132,11 +134,39 @@ public class InputHandler {
     }
 
     /**
+     * Выводит справку о клетках лабиринта.
+     *
+     * @throws IOException если произошла ошибка ввода-вывода
+     */
+    private void help() throws IOException {
+        out.println("Введите '" + HELP_COMMAND
+            + "' чтобы увидеть информацию о клетках или нажмите 'Enter' чтобы продолжить:");
+        while (true) {
+            String input = in.readLine();
+
+            if (input == null) {
+                throw new IllegalArgumentException(NULL_EXCEPTION);
+            }
+            input = input.trim();
+
+            if ("?".equals(input)) {
+                out.println("Значения клеток:");
+                out.println(MazeTextRenderer.getCellDescriptionsAsString());
+                break;
+            } else if (input.isEmpty()) {
+                break;
+            } else {
+                out.println("Некорректный ввод, введите '" + HELP_COMMAND + "' или нажмите 'Enter':");
+            }
+        }
+    }
+
+    /**
      * Позволяет пользователю выбрать алгоритм генерации или решения лабиринта.
      *
      * @param message сообщение для пользователя с выбором
-     * @param enums массив перечислений, из которых нужно сделать выбор
-     * @param <T> тип перечисления
+     * @param enums   массив перечислений, из которых нужно сделать выбор
+     * @param <T>     тип перечисления
      * @return выбранный алгоритм
      * @throws IOException если произошла ошибка ввода-вывода
      */
@@ -162,10 +192,10 @@ public class InputHandler {
         }
     }
 
-    private Generator getGenerator() {
+    private MazeGenerationAlgorithm getGenerator() {
         return switch (generatorType) {
-            case PRIMS -> new PrimsGenerator(start, end);
-            case RECURSIVE_BACKTRACKER -> new RecursiveBacktrackingGenerator(start, end);
+            case PRIMS -> new PrimsGenerator(start, end, height, width);
+            case RECURSIVE_BACKTRACKER -> new RecursiveBacktrackingGenerator(start, end, height, width);
         };
     }
 

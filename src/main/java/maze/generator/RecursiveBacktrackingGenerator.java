@@ -20,35 +20,30 @@ public class RecursiveBacktrackingGenerator extends BaseGenerator {
      * @param start координаты начальной точки лабиринта.
      * @param end   координаты конечной точки лабиринта.
      */
-    public RecursiveBacktrackingGenerator(Coordinate start, Coordinate end) {
-        super(start, end);
+    public RecursiveBacktrackingGenerator(Coordinate start, Coordinate end, int height, int width) {
+        super(start, end, height, width);
     }
 
     /**
      * Генерирует лабиринт заданных размеров.
      *
-     * @param height высота лабиринта.
-     * @param width  ширина лабиринта.
      * @return сгенерированный лабиринт.
      */
     @Override
-    public Maze generate(int height, int width) {
-        this.height = height;
-        this.width = width;
-        this.grid = new Cell[this.height][this.width];
+    public Maze generate() {
         initializeGrid();
 
         Deque<Coordinate> visitedCoordinates = new ArrayDeque<>();
         visitedCoordinates.push(start);
-        grid[start.row()][start.col()] = new Cell(start.row(), start.col(), Cell.Type.PASSAGE);
+        params.grid()[start.row()][start.col()] = new Cell(start.row(), start.col(), Cell.Type.PASSAGE);
 
         while (!visitedCoordinates.isEmpty()) {
             Coordinate current = visitedCoordinates.peek();
             List<Coordinate> neighbors = getEligibleNeighbors(current);
 
             if (!neighbors.isEmpty()) {
-                Coordinate next = neighbors.get(secureRandom.nextInt(neighbors.size()));
-                grid[next.row()][next.col()] = new Cell(next.row(), next.col(), determineNonWallSurfaceType());
+                Coordinate next = neighbors.get(getRandomInt(neighbors.size()));
+                params.grid()[next.row()][next.col()] = new Cell(next.row(), next.col(), determineNonWallSurfaceType());
 
                 visitedCoordinates.push(next);
             } else {
@@ -56,10 +51,10 @@ public class RecursiveBacktrackingGenerator extends BaseGenerator {
             }
         }
 
-        grid[end.row()][end.col()] = new Cell(end.row(), end.col(), Cell.Type.PASSAGE);
+        params.grid()[end.row()][end.col()] = new Cell(end.row(), end.col(), Cell.Type.PASSAGE);
 
         addLoops();
-        return new Maze(height, width, grid, start, end);
+        return new Maze(params.height(), params.width(), params.grid(), start, end);
     }
 
     /**

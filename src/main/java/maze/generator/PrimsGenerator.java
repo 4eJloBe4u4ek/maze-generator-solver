@@ -18,36 +18,31 @@ public class PrimsGenerator extends BaseGenerator {
      * @param start координаты начальной точки лабиринта.
      * @param end   координаты конечной точки лабиринта.
      */
-    public PrimsGenerator(Coordinate start, Coordinate end) {
-        super(start, end);
+    public PrimsGenerator(Coordinate start, Coordinate end, int height, int width) {
+        super(start, end, height, width);
     }
 
     /**
      * Генерирует лабиринт заданных размеров.
      *
-     * @param height высота лабиринта.
-     * @param width  ширина лабиринта.
      * @return сгенерированный лабиринт.
      */
     @Override
-    public Maze generate(int height, int width) {
-        this.height = height;
-        this.width = width;
-        this.grid = new Cell[this.height][this.width];
+    public Maze generate() {
         initializeGrid();
 
         List<Coordinate> boundaryCoordinates = new ArrayList<>();
-        grid[start.row()][start.col()] = new Cell(start.row(), start.col(), Cell.Type.PASSAGE);
-        grid[end.row()][end.col()] = new Cell(end.row(), end.col(), Cell.Type.PASSAGE);
+        params.grid()[start.row()][start.col()] = new Cell(start.row(), start.col(), Cell.Type.PASSAGE);
+        params.grid()[end.row()][end.col()] = new Cell(end.row(), end.col(), Cell.Type.PASSAGE);
 
         updateBoundaryCoordinates(start, boundaryCoordinates);
 
         while (!boundaryCoordinates.isEmpty()) {
-            int randomCoordinate = secureRandom.nextInt(boundaryCoordinates.size());
+            int randomCoordinate = getRandomInt(boundaryCoordinates.size());
             Coordinate boundaryCoordinate = boundaryCoordinates.get(randomCoordinate);
 
             if (connectsSingleOrEndPassage(boundaryCoordinate)) {
-                grid[boundaryCoordinate.row()][boundaryCoordinate.col()] =
+                params.grid()[boundaryCoordinate.row()][boundaryCoordinate.col()] =
                     new Cell(boundaryCoordinate.row(), boundaryCoordinate.col(), determineNonWallSurfaceType());
 
                 updateBoundaryCoordinates(boundaryCoordinate, boundaryCoordinates);
@@ -57,14 +52,14 @@ public class PrimsGenerator extends BaseGenerator {
         }
 
         addLoops();
-        return new Maze(height, width, grid, start, end);
+        return new Maze(params.height(), params.width(), params.grid(), start, end);
     }
 
     /**
      * Обновляет список граничных ячеек на основе заданной координаты: если ее нет в списке
      * и она соединена с одним проходом или конечной точкой.
      *
-     * @param coordinate координаты для обновления границ.
+     * @param coordinate          координаты для обновления границ.
      * @param boundaryCoordinates список границ для добавления новых координат.
      */
     private void updateBoundaryCoordinates(Coordinate coordinate, List<Coordinate> boundaryCoordinates) {
