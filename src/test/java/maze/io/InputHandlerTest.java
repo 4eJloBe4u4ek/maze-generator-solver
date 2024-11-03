@@ -1,11 +1,10 @@
-package maze;
+package maze.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import maze.generator.MazeGenerator;
-import maze.io.InputHandler;
 import maze.model.Coordinate;
 import maze.solver.MazeSolverAlgorithm;
 import org.junit.jupiter.api.Assertions;

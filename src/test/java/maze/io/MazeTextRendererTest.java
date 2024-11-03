@@ -1,9 +1,8 @@
-package maze;
+package maze.io;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import maze.io.MazeTextRenderer;
 import maze.model.Cell;
 import maze.model.Coordinate;
 import maze.model.Maze;

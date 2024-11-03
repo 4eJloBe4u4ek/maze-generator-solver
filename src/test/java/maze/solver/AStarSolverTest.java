@@ -1,4 +1,4 @@
-package maze;
+package maze.solver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,11 +6,10 @@ import java.util.List;
 import maze.model.Cell;
 import maze.model.Coordinate;
 import maze.model.Maze;
-import maze.solver.DijkstraSolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class DijkstraSolverTest {
+public class AStarSolverTest {
     @Test
     public void testSolveWithKnownMaze1() {
         Cell[][] testGrid = {
@@ -32,7 +31,7 @@ public class DijkstraSolverTest {
         Coordinate start = new Coordinate(0, 0);
         Coordinate end = new Coordinate(4, 4);
         Maze maze = new Maze(5, 5, testGrid, start, end);
-        DijkstraSolver solver = new DijkstraSolver();
+        AStarSolver solver = new AStarSolver();
 
         List<Coordinate> solverPath = solver.solve(maze, start, end);
 
@@ -61,7 +60,7 @@ public class DijkstraSolverTest {
         Coordinate start = new Coordinate(0, 0);
         Coordinate end = new Coordinate(4, 4);
         Maze maze = new Maze(5, 5, testGrid, start, end);
-        DijkstraSolver solver = new DijkstraSolver();
+        AStarSolver solver = new AStarSolver();
 
         List<Coordinate> solverPath = solver.solve(maze, start, end);
 
@@ -80,7 +79,7 @@ public class DijkstraSolverTest {
         Coordinate start = new Coordinate(0, 0);
         Coordinate end = new Coordinate(2, 2);
         Maze maze = new Maze(3, 3, testGrid, start, end);
-        DijkstraSolver solver = new DijkstraSolver();
+        AStarSolver solver = new AStarSolver();
 
         List<Coordinate> solverPath = solver.solve(maze, start, end);
 
